@@ -32,12 +32,22 @@ bool ModulePhysics::Start()
 	// - You need init the world in the constructor
 	// - Remember to destroy the world after using it
 
-	b2Vec2 gravity(0.0f, 10.0f);
+	b2Vec2 gravity(0.0f, 10.0f);  
 	myWorld = new b2World(gravity);
 
 	// TODO 4: Create a a big static circle as "ground"
-	b2BodyDef groundBody;
-	groundBody.position.Set(SCREEN_HEIGHT/2, SCREEN_WIDTH/2);
+	b2BodyDef groundBodyDef;
+	groundBodyDef.position.Set(SCREEN_HEIGHT/2, SCREEN_WIDTH/2);
+
+	b2Body* groundBody = myWorld->CreateBody(&groundBodyDef);
+
+	b2PolygonShape groundBox;
+	groundBox.SetAsBox(50.0f, 10.0f);
+	groundBody->CreateFixture(&groundBox, 0.0f);
+
+	/*b2CircleShape groundCircle;
+	groundCircle.m_p.Set(0.0f,0.0f);
+	groundCircle.m_radius = 100.0f;*/
 
 	return true;
 }
@@ -51,8 +61,8 @@ update_status ModulePhysics::PreUpdate()
 	int32 positionIterations = 3;
 
 	for (int32 i = 0; i < 60; ++i)
-	{
-		myWorld->Step(timeStep, velocityIterations, positionIterations);
+	{ 
+		myWorld->Step(timeStep, velocityIterations, positionIterations);
 	}
 	return UPDATE_CONTINUE;
 }
@@ -101,6 +111,7 @@ bool ModulePhysics::CleanUp()
 	LOG("Destroying physics world");
 
 	// Delete the whole physics world!
+	free(myWorld);
 
 	return true;
 }
