@@ -5,6 +5,7 @@
 #include "j1Textures.h"
 #include "j1Map.h"
 #include <math.h>
+#include <sting.h>
 
 j1Map::j1Map() : j1Module(), map_loaded(false)
 {
@@ -287,33 +288,25 @@ bool j1Map::LoadTilesetImage(pugi::xml_node& tileset_node, TileSet* set)
 // TODO 3: Create the definition for a function that loads a single layer
 bool j1Map::LoadLayer(pugi::xml_node& node, mapLayer* layer)
 {
+	//node --> "layer" child --> "data" 
+	//child --> "tile"(s) --> attribute(s) --> gid = ...
+
 	bool ret = true;
 	layer->name.create(node.attribute("name").as_string());
 	layer->width = node.attribute("width").as_int();
 	layer->heigth = node.attribute("height").as_int();
-	layer->gidArray = node.attribute("data").as_int();
-	pugi::xml_node gids = node.child("")
+	layer->gidArray = new unsigned int();
+	unsigned int gidValue = 0;
 
-	//--------------------------------------
-	bool ret = true;
-	set->name.create(tileset_node.attribute("name").as_string());
-	set->firstgid = tileset_node.attribute("firstgid").as_int();
-	set->tile_width = tileset_node.attribute("tilewidth").as_int();
-	set->tile_height = tileset_node.attribute("tileheight").as_int();
-	set->margin = tileset_node.attribute("margin").as_int();
-	set->spacing = tileset_node.attribute("spacing").as_int();
-	pugi::xml_node offset = tileset_node.child("tileoffset");
+	int i = 0;
 
-	if (offset != NULL)
+	for (pugi::xml_node tile = node.child("data").first_child();
+		tile; tile = tile.next_sibling())
 	{
-		set->offset_x = offset.attribute("x").as_int();
-		set->offset_y = offset.attribute("y").as_int();
+		(layer->gidArray + i) = tile;
+			i++;
 	}
-	else
-	{
-		set->offset_x = 0;
-		set->offset_y = 0;
-	}
+
 
 	return ret;
 }

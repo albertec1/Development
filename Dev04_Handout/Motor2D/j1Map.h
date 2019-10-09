@@ -14,7 +14,7 @@ struct mapLayer
 	p2SString			name;
 	unsigned int		width;
 	unsigned int		heigth;
-	unsigned int		gidArray;  //array to store all the id values1
+	unsigned int		gidArray();  //array to store all the id values1
 
 };
 // ----------------------------------------------------
@@ -105,6 +105,7 @@ private:
 
 		return ret;*/
 	}
+	unsigned int* gidList;
 
 public:
 
