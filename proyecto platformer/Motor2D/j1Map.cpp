@@ -5,7 +5,7 @@
 #include "j1Textures.h"
 #include "j1Map.h"
 #include <math.h>
-#include <sting.h>
+
 
 j1Map::j1Map() : j1Module(), map_loaded(false)
 {
@@ -33,6 +33,18 @@ void j1Map::Draw()
 		return;
 
 	// TODO 5: Prepare the loop to iterate all the tiles in a layer
+	//(pc)layer width = map width; same happens with heigth. so:
+
+	unsigned int layer_width = data.width;
+	unsigned int layer_height = data.height;
+	
+	for (unsigned int i = 0; i < layer_height; i++)
+	{
+		for (unsigned int j = 0; j < layer_width; j++)
+		{
+			//---algo---//
+		}
+	}
 
 	// TODO 9: Complete the draw function
 
@@ -102,7 +114,7 @@ bool j1Map::Load(const char* file_name)
 
 		if(ret == true)
 		{
-			ret = LoadTilesetDetails(tileset, set);
+			ret  = LoadTilesetDetails(tileset, set);
 		}
 
 		if(ret == true)
@@ -115,10 +127,17 @@ bool j1Map::Load(const char* file_name)
 
 	// TODO 4: Iterate all layers and load each of them
 	// Load layer info ----------------------------------------------
-	pugi::xml_node layers;
-	for (layers = map_file.child("map").child("tileset"); layers && ret; layers = layers.next_sibling("layers"))
+	pugi::xml_node layer;
+	for (layer = map_file.child("map").child("layer"); layer && ret; layer = layer.next_sibling("layer"))
 	{
-		
+		mapLayer* map = new mapLayer();
+
+		if (ret == true)
+		{
+			ret = LoadLayer(layer, map);
+		}
+
+		data.layers.add(map);
 	}
 
 
@@ -141,16 +160,16 @@ bool j1Map::Load(const char* file_name)
 
 		// TODO 4: Add info here about your loaded layers
 		// Adapt this code with your own variables
-		/*
-		p2List_item<MapLayer*>* item_layer = data.layers.start;
+		
+		p2List_item<mapLayer*>* item_layer = data.layers.start;
 		while(item_layer != NULL)
 		{
-			MapLayer* l = item_layer->data;
+			mapLayer* l = item_layer->data;
 			LOG("Layer ----");
 			LOG("name: %s", l->name.GetString());
-			LOG("tile width: %d tile height: %d", l->width, l->height);
+			LOG("tile width: %d tile height: %d", l->width, l->heigth);
 			item_layer = item_layer->next;
-		}*/
+		}
 	}
 
 	map_loaded = ret;
@@ -303,7 +322,7 @@ bool j1Map::LoadLayer(pugi::xml_node& node, mapLayer* layer)
 	for (pugi::xml_node tile = node.child("data").first_child();
 		tile; tile = tile.next_sibling())
 	{
-		(layer->gidArray + i) = tile;
+		*(layer->gidArray + i) = tile.attribute("gid").as_uint();
 			i++;
 	}
 
